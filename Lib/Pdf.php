@@ -10,6 +10,7 @@ App::import('Vendor', 'FPDI', array('file' => 'FPDI' . DS . 'fpdi.php'));
 class Pdf {
 
     public $fpdi;
+	public $escapeCharacters = false;
     private $templateFilePath;
     private $data = array();
 
@@ -102,6 +103,7 @@ class Pdf {
         $font = Configure::read('Pdf.font');
         $defaultFontSize = Configure::read('Pdf.fontSize');
         $defaultFontSize = empty($defaultFontSize) ? 10 : (double)$defaultFontSize;
+		$this->fpdi->SetFont($font, '', $defaultFontSize);
         $changed = false;
 
         for ($i = 0; $i < $page; $i++) {
@@ -111,7 +113,7 @@ class Pdf {
                 foreach ($this->data[$i] as $value) {
                     $width = empty($value[1]['width']) ? 0 : $value[1]['width'];
                     $height = empty($value[1]['height']) ? 0 : $value[1]['height'];
-                    $align = empty($value[1]['align']) ? 'J' : $value[1]['align'];
+                    $align = empty($value[1]['align']) ? 'L' : $value[1]['align'];
                     if (!empty($value[1]['fontSize']) && $value[1]['fontSize'] != $defaultFontSize) {
                         $fontSize = $value[1]['fontSize'];
                         if ($font) {
@@ -119,6 +121,11 @@ class Pdf {
                             $changed = true;
                         }
                     }
+
+					if ($this->escapeCharacters) {
+						setlocale(LC_CTYPE, 'cs_CZ.UTF-8');
+						$value[0] = iconv('UTF-8', 'ASCII//TRANSLIT', $value[0]);
+					}
                     $this->fpdi->MultiCell($width,
                                            $height,
                                            $value[0],
