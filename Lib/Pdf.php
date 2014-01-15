@@ -121,6 +121,14 @@ class Pdf {
                             $changed = true;
                         }
                     }
+                    if (!empty($value[1]['fontWeight'])) {
+                        $fontWeight = $value[1]['fontWeight'];
+                        if ($font) {
+                            $this->fpdi->SetFont($font, $fontWeight, $defaultFontSize);
+                            $changed = true;
+                        }
+                    }
+
 
 					if ($this->escapeCharacters) {
 						setlocale(LC_CTYPE, 'cs_CZ.UTF-8');
